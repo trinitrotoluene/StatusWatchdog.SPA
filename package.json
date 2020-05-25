@@ -5,20 +5,28 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build-debug": "vue-cli-service build --mode=debug",
+    "watch": "nodemon -e \"js vue\" -i \"dist\" -i \"node_modules\" --exec \"npm run build-debug\""
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "bulma": "^0.8.2",
+    "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-plugin-router": "^4.3.1",
     "@vue/cli-service": "~4.3.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "watch": "^1.0.2"
   },
   "eslintConfig": {
     "root": true,
@@ -32,7 +40,9 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+        "no-unused-vars": "off"
+    }
   },
   "browserslist": [
     "> 1%",
