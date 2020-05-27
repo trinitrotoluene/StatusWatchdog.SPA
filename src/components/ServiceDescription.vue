@@ -1,13 +1,21 @@
 <template>
-    <div>
-        <div>{{displayName}}</div>
-        <div>{{description}}</div>
-        <canvas ref="serviceCanvas"></canvas>
+    <div class="rounded-md border-black border-1 shadow-lg">
+        <div class="flex flex-row shadow-md p-2">
+            <router-link :to="{ name: 'service', params: { id: slug }}" class>{{displayName}}</router-link>
+            <div v-bind:class="statusTextClass">
+                <span class="font-bold">{{statusTextValue}}</span>
+            </div>
+        </div>
+        <div class="px-2 py-4">
+            <chart-component :statistics="statistics" class="status-bar"></chart-component>
+        </div>
     </div>
 </template>
 
 <script>
-import Chart from "chart.js";
+const axios = require("axios");
+
+import chartComponent from "../components/ChartComponent";
 
 export default {
     name: "ServiceDescription",
@@ -20,61 +28,49 @@ export default {
     },
     data() {
         return {
-            uptimeData: null,
-            barColors: null
+            statistics: []
         };
     },
-    mounted: function() {
-        // todo: get data from API
-        this.uptimeData = [100, 100, 99.4, 100, 100, 99.01, 100];
-        this.barColors = [
-            "green",
-            "green",
-            "orange",
-            "green",
-            "green",
-            "red",
-            "green"
-        ];
-
-        const chartContext = this.$refs.serviceCanvas.getContext("2d");
-        const chart = new Chart(chartContext, {
-            responsive: true,
-            maintainAspectRatio: false,
-            type: "bar",
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: "uptime",
-                        data: this.uptimeData,
-                        backgroundColor: this.barColors,
-                        barThickness: 8,
-
-                    }
-                ]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            display: false,
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            display: false,
-                        }
-                    ]
-                }
+    computed: {
+        statusTextClass: function() {
+            return {
+                "ml-auto": true,
+                "status-text": true,
+                "text-green-500": this.status == 0,
+                "text-orange-500": this.status == 1,
+                "text-red-500": this.status == 2
+            };
+        },
+        statusTextValue: function() {
+            switch (this.status) {
+                case 0:
+                    return "Normal";
+                case 1:
+                    return "Partial Outage";
+                case 2:
+                    return "Major Outage";
+                default:
+                    return "Unknown";
             }
-        });
+        }
+    },
+    created: function() {
+        this.fetchServiceStatistics();
+    },
+    methods: {
+        fetchServiceStatistics: function() {
+            axios
+                .get("/api/v1/services/" + this.id + "/uptime" + "?limit=50")
+                .then(response => {
+                    this.statistics = response.data;
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    },
+    components: {
+        "chart-component": chartComponent
     }
 };
 </script>

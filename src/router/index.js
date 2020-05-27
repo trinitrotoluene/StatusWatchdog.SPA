@@ -5,36 +5,36 @@ import Service from '../views/Service.vue'
 import Incident from '../views/Incident.vue'
 import Maintenance from '../views/Maintenance.vue'
 
-require('bulma/css/bulma.css')
 require('chart.js')
+require('moment')
 
 Vue.use(VueRouter)
 
-  const routes = [
-  {
-    path: '/',
-    name: 'StatusPage',
-    component: StatusPage
-  },
-  {
-    path: '/service/:id',
-    name: 'Service',
-    component: Service
-  },
-  {
-    path: '/incident/:id',
-    name: 'Incident',
-    component: Incident
-  },
-  {
-    path: '/maintenance/:id',
-    name: 'Maintenance',
-    component: Maintenance
-  }
+const routes = [
+    {
+        path: '/',
+        name: 'statusPage',
+        component: StatusPage
+    },
+    {
+        path: '/service/:id',
+        name: 'service',
+        component: Service
+    },
+    {
+        path: '/incident/:id',
+        name: 'incident',
+        component: Incident
+    },
+    {
+        path: '/maintenance/:id',
+        name: 'maintenance',
+        component: Maintenance
+    }
 ]
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 export default router
