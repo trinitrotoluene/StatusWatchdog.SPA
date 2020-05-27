@@ -1,11 +1,11 @@
 <template>
-    <div class="bg-gray-100 border-gray-700 text-gray-700 border-l-4 p-4">
+    <div :class="cardClass">
         <div class="flex flex-row items-start justify-between">
             <div class="text-lg font-bold">{{stateMessage}}</div>
             <div>{{message}}</div>
         </div>
-        <div class="italic text-sm inline ml-auto">
-            <span>Posted: {{sinceMessage}}</span>
+        <div class="text-sm inline ml-auto">
+            <span>Posted {{sinceMessage}}.</span>
         </div>
     </div>
 </template>
@@ -44,7 +44,24 @@ export default {
         }
     },
     data() {
-        return {};
+        return {
+            cardClass: {
+                'border-l-4': true,
+                'p-4': true,
+                'bg-red-100': this.state === 0,
+                'text-red-700': this.state === 0,
+                'border-red-700': this.state === 0,
+                'bg-orange-100': this.state === 1,
+                'text-orange-700': this.state === 1,
+                'border-orange-600': this.state === 1,
+                'bg-gray-100': this.state === 2,
+                'text-gray-700': this.state === 2,
+                'border-gray-700': this.state === 2,
+                'bg-green-100': this.state === 3,
+                'text-green-700': this.state === 3,
+                'border-green-700': this.state === 3,
+            }
+        };
     }
 };
 </script>

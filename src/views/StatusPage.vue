@@ -6,15 +6,15 @@
                 <status-display :status="statusSummary"></status-display>
             </div>
 
-            <div class="text-sm tracking-widest">ACTIVE INCIDENTS</div>
-            <div class="px-5 border-dashed border-2 rounded-lg">
+            <div v-if="activeIncidents.length > 0" class="text-sm tracking-widest">ACTIVE INCIDENTS</div>
+            <div v-if="activeIncidents.length > 0" class="px-5 border-dashed border-2 rounded-lg">
                 <incident-card
                     v-for="incident in activeIncidents"
                     :key="incident.id"
                     :id="incident.id"
                     :status="incident.caused_status"
                     :title="incident.title"
-                    :since="new Date(incident.created_at)"
+                    :createdAt="new Date(incident.created_at)"
                     class="my-5"
                 ></incident-card>
             </div>
