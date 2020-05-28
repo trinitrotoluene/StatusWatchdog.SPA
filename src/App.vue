@@ -3,9 +3,9 @@
         <div class="bg-dark py-10">
             <div class="container text-white">
                 <div class="text-2xl font-bold">
-                    <router-link to="/" class>Acme inc. Statuspage</router-link>
+                    <router-link to="/" class>{{title}}</router-link>
                 </div>
-                <div class="text-lg">We provide you with services.</div>
+                <div class="text-lg">{{subtitle}}</div>
             </div>
         </div>
 
@@ -15,5 +15,32 @@
     </div>
 </template>
 
+<script>
+export default {
+    data() {
+        return {
+            pollingAction: null
+        };
+    },
+    computed: {
+        title: function() {
+            return this.$store.state.title
+        },
+        subtitle: function() {
+            return this.$store.state.subtitle
+        }
+    },
+    created: function() {
+        this.$store.dispatch('fetchMeta');
+
+        this.pollingAction = setInterval(() => {
+            this.$store.dispatch('fetchMeta');
+        }, 5000);
+    },
+    beforeDestroy: function() {
+        clearInterval(this.pollingAction);
+    }
+}
+</script>
 <style>
 </style>

@@ -1,8 +1,8 @@
 <template>
     <div :class="cardClass">
-        <div class="flex flex-row items-start justify-between">
-            <div class="text-lg font-bold">{{stateMessage}}</div>
-            <div>{{message}}</div>
+        <div class="flex lg:flex-row flex-col items-start justify-between">
+            <div class="text-lg font-bold flex-grow-0">{{stateMessage}}</div>
+            <div class="flex-grow-0 w-3/4">{{message}}</div>
         </div>
         <div class="text-sm inline ml-auto">
             <span>Posted {{sinceMessage}}.</span>

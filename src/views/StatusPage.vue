@@ -1,24 +1,22 @@
 <template>
     <div>
-        <div v-if="error !== ''">{{ error }}</div>
-        <div class="section">
-            <div class="my-10">
-                <status-display :status="statusSummary"></status-display>
-            </div>
-
-            <div v-if="activeIncidents.length > 0" class="text-sm tracking-widest">ACTIVE INCIDENTS</div>
-            <div v-if="activeIncidents.length > 0" class="px-5 border-dashed border-2 rounded-lg">
-                <incident-card
-                    v-for="incident in activeIncidents"
-                    :key="incident.id"
-                    :id="incident.id"
-                    :status="incident.caused_status"
-                    :title="incident.title"
-                    :createdAt="new Date(incident.created_at)"
-                    class="my-5"
-                ></incident-card>
-            </div>
+        <div class="my-10">
+            <status-display :status="statusSummary"></status-display>
         </div>
+
+        <div v-if="activeIncidents.length > 0" class="text-sm tracking-widest">ACTIVE INCIDENTS</div>
+        <div v-if="activeIncidents.length > 0" class="px-5 border-dashed border-2 rounded-lg">
+            <incident-card
+                v-for="incident in activeIncidents"
+                :key="incident.id"
+                :id="incident.id"
+                :status="incident.caused_status"
+                :title="incident.title"
+                :createdAt="incident.created_at"
+                class="my-5"
+            ></incident-card>
+        </div>
+
         <div class="my-10"></div>
         <div class="text-sm tracking-widest">SERVICES</div>
         <div class="px-5 border-dashed border-2 rounded-lg">
@@ -33,11 +31,24 @@
                 class="my-5"
             ></service-description>
         </div>
+
+        <div class="my-10"></div>
+        <div v-if="recentIncidents.length > 0" class="text-sm tracking-widest">RECENT INCIDENTS</div>
+        <div v-if="recentIncidents.length > 0" class="px-5 border-dashed border-2 rounded-lg">
+            <incident-card
+                v-for="incident in recentIncidents"
+                :key="incident.id"
+                :id="incident.id"
+                :status="incident.caused_status"
+                :title="incident.title"
+                :createdAt="incident.created_at"
+                class="my-5"
+            ></incident-card>
+        </div>
     </div>
 </template>
 
 <script>
-const axios = require("axios");
 import serviceDescription from "../components/ServiceDescription";
 import statusDisplay from "../components/StatusDisplay";
 import incidentCard from "../components/IncidentCard";
@@ -49,14 +60,16 @@ export default {
         "status-display": statusDisplay,
         "incident-card": incidentCard
     },
-    data() {
-        return {
-            activeIncidents: [],
-            services: [],
-            error: ""
-        };
-    },
     computed: {
+        activeIncidents: function() {
+            return this.$store.state.incidents;
+        },
+        recentIncidents: function() {
+            return this.$store.state.recentIncidents;
+        },
+        services: function() {
+            return this.$store.state.services;
+        },
         statusSummary: function() {
             if (this.services.some(x => x.status === 2)) {
                 return 2;
@@ -67,42 +80,26 @@ export default {
             return 0;
         }
     },
+    data() {
+        return {
+            pollingAction: null
+        };
+    },
     created: function() {
-        this.fetchServiceMetadata();
+        this.triggerPollApi();
+
+        this.pollingAction = setInterval(() => {
+            this.triggerPollApi();
+        }, 3000);
+    },
+    beforeDestroy: function() {
+        clearInterval(this.pollingAction);
     },
     methods: {
-        fetchServiceMetadata: function() {
-            axios
-                .get("/api/v1/services")
-                .then(response => {
-                    if (response.status !== 200) {
-                        this.error =
-                            "Failed to fetch services from the status server. Request failed with code " +
-                            response.status;
-                    } else {
-                        this.services = response.data;
-                    }
-                })
-                .catch(() => {
-                    this.error =
-                        "Failed to fetch services from the status server.";
-                });
-
-            axios
-                .get("/api/v1/incidents")
-                .then(response => {
-                    if (response.status !== 200) {
-                        this.error =
-                            "Failed to fetch active incidents from the status server. Request failed with code " +
-                            response.status;
-                    } else {
-                        this.activeIncidents = response.data;
-                    }
-                })
-                .catch(() => {
-                    this.error =
-                        "Failed to fetch incidents from the status server.";
-                });
+        triggerPollApi: function() {
+            this.$store.dispatch("fetchIncidents");
+            this.$store.dispatch("fetchServices");
+            this.$store.dispatch("fetchRecentIncidents");
         }
     }
 };
