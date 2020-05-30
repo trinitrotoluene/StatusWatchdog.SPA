@@ -99,7 +99,7 @@ export default {
 
         this.pollingAction = setInterval(() => {
             this.triggerPollApi();
-        }, 3000);
+        }, this.$store.state.defaults.slowPoll);
     },
     beforeDestroy: function() {
         clearInterval(this.pollingAction);

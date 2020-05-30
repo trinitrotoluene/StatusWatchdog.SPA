@@ -1,6 +1,9 @@
 <template>
-    <div style="position: relative; height: 100px">
-        <canvas ref="chartCanvas"></canvas>
+    <div>
+        <div class="p-2">{{title}}</div>
+        <div class="px-2" style="position: relative; height: 100px">
+            <canvas ref="chartCanvas"></canvas>
+        </div>
     </div>
 </template>
 
@@ -10,10 +13,15 @@ import Chart from "chart.js";
 export default {
     props: {
         title: String,
-        data: Array,
-        tags: Array
+        entries: Array
     },
     computed: {
+        data: function() {
+            return this.entries.map(x => x.value);
+        },
+        tags: function() {
+            return this.entries.map(x => x.tag);
+        },
         chartOptions: function() {
             return {
                 type: "line",
@@ -60,7 +68,7 @@ export default {
     },
     mounted: function() {
         const chartCtx = this.$refs.chartCanvas.getContext("2d");
-        const chart = new Chart(chartCtx.this.chartOptions);
+        const chart = new Chart(chartCtx, this.chartOptions);
 
         this.$watch("data", function(data, newData) {
             this.updateChart(newData);

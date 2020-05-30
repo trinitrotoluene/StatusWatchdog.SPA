@@ -90,7 +90,7 @@ export default {
                     custom: function(tooltipModel) {
                         // Tooltip Element
                         var tooltipEl = document.getElementById('chartjs-tooltip');
-                        
+
                         // Create element on first render
                         if (!tooltipEl) {
                             tooltipEl = document.createElement('div');

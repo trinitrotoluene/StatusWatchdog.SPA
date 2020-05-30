@@ -1,13 +1,23 @@
 <template>
-    <div class="rounded-md border-black border-1 shadow-lg">
+    <div class="rounded-md border-black border-1 shadow-lg py-2">
         <div class="flex flex-row shadow-md p-2">
-            <router-link :to="{ name: 'service', params: { id: slug }}" class>{{displayName}}</router-link>
+            <div>{{displayName}}</div>
             <div v-bind:class="statusTextClass">
                 <span class="font-bold">{{statusTextValue}}</span>
             </div>
         </div>
-        <div class="px-2 py-4">
-            <chart-component :statistics="statistics" class="status-bar"></chart-component>
+        <div v-if="uptimeStatistics.length > 0" class="px-2 py-4">
+            <chart-component :statistics="uptimeStatistics" class="status-bar"></chart-component>
+        </div>
+        <div v-if="metrics.length > 0">
+            <div v-for="metric in metrics" :key="metric.id">
+                <line-metric-component
+                    v-if="metric.entries.length > 0"
+                    :key="metric.id"
+                    :title="metric.name"
+                    :entries="metric.entries"
+                ></line-metric-component>
+            </div>
         </div>
     </div>
 </template>
@@ -16,6 +26,7 @@
 const axios = require("axios");
 
 import chartComponent from "../components/ChartComponent";
+import lineMetricComponent from "../components/LineMetricComponent";
 
 export default {
     name: "ServiceDescription",
@@ -28,10 +39,28 @@ export default {
     },
     data() {
         return {
-            statistics: []
+            pollingAction: null
         };
     },
     computed: {
+        metrics: function() {
+            if (this.statistics === undefined) {
+                return [];
+            } else {
+                console.log(this.statistics.metrics);
+                return this.statistics.metrics;
+            }
+        },
+        uptimeStatistics: function() {
+            if (this.statistics === undefined) {
+                return [];
+            } else {
+                return this.statistics.uptime;
+            }
+        },
+        statistics: function() {
+            return this.$store.state.serviceStatistics[this.id];
+        },
         statusTextClass: function() {
             return {
                 "ml-auto": true,
@@ -55,22 +84,18 @@ export default {
         }
     },
     created: function() {
-        this.fetchServiceStatistics();
+        this.$store.dispatch("fetchServiceStatistics", this.id);
+
+        this.pollingAction = setInterval(() => {
+            this.$store.dispatch("fetchServiceStatistics", this.id);
+        }, this.$store.state.defaults.slowPoll);
     },
-    methods: {
-        fetchServiceStatistics: function() {
-            axios
-                .get("/api/v1/services/" + this.id + "/uptime" + "?limit=50")
-                .then(response => {
-                    this.statistics = response.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        }
+    beforeDestroy: function() {
+        clearInterval(this.pollingAction);
     },
     components: {
-        "chart-component": chartComponent
+        "chart-component": chartComponent,
+        "line-metric-component": lineMetricComponent
     }
 };
 </script>

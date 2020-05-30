@@ -12,7 +12,13 @@ export default new Vuex.Store({
         subtitle: "Subtitle",
         services: [],
         incidents: [],
-        recentIncidents: []
+        recentIncidents: [],
+        serviceStatistics: {},
+        defaults: {
+            slowPoll: 60 * 1000,
+            mediumPoll: 30 * 1000,
+            fastPoll: 15 * 1000
+        }
     },
     mutations: {
         setServices(state, newServices) {
@@ -32,6 +38,9 @@ export default new Vuex.Store({
             if (newMeta.subtitle != null) {
                 state.subtitle = newMeta.subtitle
             }
+        },
+        setServiceStatistics(state, statistics) {
+            Vue.set(state.serviceStatistics, statistics.key, statistics);
         }
     },
     actions: {
@@ -50,6 +59,25 @@ export default new Vuex.Store({
         fetchRecentIncidents: async function (ctx) {
             const response = await axios.get(endpointBase + '/incidents/recent')
             ctx.commit('setRecentIncidents', response.data)
+        },
+        fetchServiceStatistics: async function (ctx, serviceId) {
+            const statistics = {
+                key: serviceId,
+                uptime: [],
+                metrics: []
+            }
+
+            const uptimeResponse = await axios.get(endpointBase + '/services/' + serviceId + "/uptime?limit=50")
+            statistics.uptime = uptimeResponse.data
+
+            const metricsResponse = await axios.get(endpointBase + '/services/' + serviceId + '/metrics')
+            metricsResponse.data.forEach(async value => {
+                const metricsDataResponse = await axios.get(endpointBase + '/metrics/' + value.id + '?limit=50')
+                value.entries = metricsDataResponse.data
+                statistics.metrics.push(value)
+            })
+
+            ctx.commit('setServiceStatistics', statistics)
         }
     },
     modules: {

@@ -1,11 +1,11 @@
 <template>
     <div class="font-body" id="app">
-        <div class="bg-dark py-10">
+        <div class="bg-dark py-20">
             <div class="container text-white">
-                <div class="text-2xl font-bold">
+                <div class="text-4xl font-bold">
                     <router-link to="/" class>{{title}}</router-link>
                 </div>
-                <div class="text-lg">{{subtitle}}</div>
+                <div class="text-2xl">{{subtitle}}</div>
             </div>
         </div>
 
@@ -35,7 +35,7 @@ export default {
 
         this.pollingAction = setInterval(() => {
             this.$store.dispatch('fetchMeta');
-        }, 5000);
+        }, this.$store.state.defaults.slowPoll);
     },
     beforeDestroy: function() {
         clearInterval(this.pollingAction);
