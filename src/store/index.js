@@ -25,8 +25,13 @@ export default new Vuex.Store({
             state.recentIncidents = newRecentIncidents
         },
         setMeta(state, newMeta) {
-            state.title = newMeta.title
-            state.subtitle = newMeta.subtitle
+            if (newMeta.title != null) {
+                state.title = newMeta.title
+            }
+
+            if (newMeta.subtitle != null) {
+                state.subtitle = newMeta.subtitle
+            }
         }
     },
     actions: {

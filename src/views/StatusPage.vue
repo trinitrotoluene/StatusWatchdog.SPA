@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="my-10">
+        <div v-if="statusSummary !== -1" class="my-10">
             <status-display :status="statusSummary"></status-display>
         </div>
 
@@ -19,7 +19,7 @@
 
         <div class="my-10"></div>
         <div class="text-sm tracking-widest">SERVICES</div>
-        <div class="px-5 border-dashed border-2 rounded-lg">
+        <div v-if="services.length > 0" class="px-5 border-dashed border-2 rounded-lg">
             <service-description
                 v-for="service in services"
                 :key="service.id"
@@ -30,6 +30,11 @@
                 :description="service.description"
                 class="my-5"
             ></service-description>
+        </div>
+        <div v-else class="px-5 border-dashed border-2 rounded-lg">
+            <div class="py-5 text-md">
+                You have no services configured.
+            </div>
         </div>
 
         <div class="my-10"></div>
@@ -71,6 +76,10 @@ export default {
             return this.$store.state.services;
         },
         statusSummary: function() {
+            if (this.services.length === 0) {
+                return -1;
+            }
+
             if (this.services.some(x => x.status === 2)) {
                 return 2;
             } else if (this.services.some(x => x.status === 1)) {
