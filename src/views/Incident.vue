@@ -32,19 +32,7 @@ export default {
         };
     },
     created: function() {
-        this.fetchUpdates();
-    },
-    methods: {
-        fetchUpdates: function() {
-            axios
-                .get("/api/v1/incidents/" + this.$route.params.id)
-                .then(response => {
-                    this.incident = response.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        }
+        this.$store.dispatch('fetchIncidentUpdates', this.$route.params.id);
     }
 };
 </script>
