@@ -14,6 +14,7 @@ export default new Vuex.Store({
         incidents: [],
         recentIncidents: [],
         serviceStatistics: {},
+        incidentUpdates: {},
         defaults: {
             slowPoll: 60 * 1000,
             mediumPoll: 30 * 1000,
@@ -40,7 +41,10 @@ export default new Vuex.Store({
             }
         },
         setServiceStatistics(state, statistics) {
-            Vue.set(state.serviceStatistics, statistics.key, statistics);
+            Vue.set(state.serviceStatistics, statistics.key, statistics)
+        },
+        setIncidentUpdates(state, updateInfo) {
+            Vue.set(state.incidentUpdates, updateInfo.id, updateInfo.updates)
         }
     },
     actions: {
@@ -78,6 +82,10 @@ export default new Vuex.Store({
             })
 
             ctx.commit('setServiceStatistics', statistics)
+        },
+        fetchIncidentUpdates: async function (ctx, incidentId) {
+            const response = await axios.get("/api/v1/incidents/" + incidentId)
+            ctx.commit('setRecentIncidents', { id: incidentId, updates: response.data })
         }
     },
     modules: {
