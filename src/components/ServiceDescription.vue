@@ -1,7 +1,7 @@
 <template>
     <div class="rounded-md border-black border-1 shadow-lg py-2">
         <div class="flex flex-row shadow-md p-2">
-            <div>{{displayName}}</div>
+            <div class="font-bold">{{displayName}}</div>
             <div v-bind:class="statusTextClass">
                 <span class="font-bold">{{statusTextValue}}</span>
             </div>
