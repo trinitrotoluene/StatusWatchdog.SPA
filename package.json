@@ -10,7 +10,7 @@
     "watch": "npx nodemon -e \"js vue\" -i \"dist\" -i \"node_modules\" --exec \"npm run build-debug\""
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
     "moment": "^2.27.0",
